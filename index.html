@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Climate Detective</title>
+<link rel="stylesheet" href="lib/maplibre-gl.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>🔍 Climate Detective</h1>
+  <p>Click anywhere on Earth to find out what's really changing in its climate, explained in plain words.</p>
+</header>
+
+<main>
+  <section id="left">
+    <div id="modes" role="radiogroup" aria-label="What to analyze">
+      <span>Analyze:</span>
+      <button data-mode="point" class="on" role="radio" aria-checked="true">📍 A location</button>
+      <button data-mode="country" role="radio" aria-checked="false">🏳️ A country</button>
+      <button data-mode="continent" role="radio" aria-checked="false">🌎 A continent</button>
+    </div>
+    <p class="note" id="modeHint">Click any spot on the map to analyze that location (about 30 miles across).</p>
+    <div id="mapWrap"><div id="map" aria-label="World map. Click a location to investigate."></div><div id="mapLegend" hidden></div></div>
+    <div id="demos">
+      <span>Try a case:</span>
+      <button data-lat="27.95" data-lon="-82.46" data-name="Tampa, FL">Tampa, FL</button>
+      <button data-lat="33.45" data-lon="-112.07" data-name="Phoenix, AZ (desert)">Phoenix (desert)</button>
+      <button data-lat="71.29" data-lon="-156.79" data-name="Utqiagvik, AK (Arctic)">Utqiagvik (Arctic)</button>
+    </div>
+    <p class="note">Drag the bar between the map and results to resize. Zoom in to see states and cities.</p>
+    <p class="note" id="boxNote">The blue box shows the area NASA's data covers (about 30 miles across). Results describe that whole area, not one street.</p>
+  </section>
+
+  <div id="divider" role="separator" aria-orientation="vertical" aria-label="Drag to resize the map and results" tabindex="0" title="Drag to resize"><span></span></div>
+
+  <section id="right">
+    <div id="intro">
+      <h2>How it works</h2>
+      <ol>
+        <li><b>Pick a place</b>: click anywhere on the map, or try a case below it.</li>
+        <li>We grab <b>40+ years of NASA climate records</b> for that spot.</li>
+        <li>We test 10 climate variables (like nighttime temperature, rainfall, and wind) for a <b>statistically clear trend</b>, not just an unusual year.</li>
+        <li><b>Select any result</b> for a plain-language summary, a chart, and how confident we are.</li>
+      </ol>
+    </div>
+    <div id="loading" role="status" aria-live="polite" hidden></div>
+    <div id="status" role="status" aria-live="polite"></div>
+    <div id="suspects"></div>
+    <div id="caseFile"></div>
+    <div id="verified"></div>
+  </section>
+</main>
+
+<footer>
+  <p><b>How we decide if something is "really changing":</b> Weather bounces around every year, so one hot summer doesn't prove anything. We look at 40+ years at once and use two standard science tools: the <i>Mann-Kendall test</i> (does it keep going the same direction, more than random luck would?) and <i>Sen's slope</i> (how fast?). We use yearly averages so normal summer/winter swings don't fool us.</p>
+  <p><b>Honest note:</b> We check 10 things at once, so a "Possible trend" result could occasionally be a false alarm. And these results show <i>what</i> changed, not <i>why</i>.</p>
+  <p><b>Data:</b> NASA POWER (built from NASA MERRA-2 and CERES) · NASA GPM IMERG via Giovanni · NOAA NCEI Climate Data Online. Map outlines and names: Natural Earth (public domain). Not affiliated with or endorsed by NASA.</p>
+</footer>
+
+<script src="lib/maplibre-gl.js"></script>
+<script src="lib/chart.umd.min.js"></script>
+<script src="geo.js"></script>
+<script src="geo2.js"></script>
+<script src="stats.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
