@@ -63,7 +63,7 @@ HTML, CSS, JavaScript. No backend.
 - "Statistical test methods to detect trends in time series data" (Medium) and "A Comprehensive Guide to Statistical Significance" (Statsig) (challenge resources).
 
 ## AI use
-Built with help from Claude (Anthropic) for code and planning. All results come from the cited data.
+Built by Aaryan Devaanbu, with AI assistance (Claude) for coding. Project idea, data collection, validation, and design decisions by Me, Aaryan. All results come from the cited data.
 
 *Not affiliated with or endorsed by NASA.*
 
