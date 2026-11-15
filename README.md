@@ -1,5 +1,7 @@
 # Climate Detective
 
+Live app: https://sjfbshf.github.io/Climate-Detective/
+
 **NASA Space Apps Challenge 2026: "Be An Earth System Trend Detective!"**
 
 Click anywhere on Earth. Climate Detective checks 10 NASA climate variables for that spot, tests each one for a real trend, and ranks the "suspects": the variables that are actually changing. Click a suspect to open its case file: a chart, a trend line, and a plain-English verdict.
@@ -27,7 +29,7 @@ Open `index.html` in Chrome, Edge, or Brave, or visit the hosted version. An int
 **Tampa's nights are warming about twice as fast as its days.** NASA POWER and NOAA's airport station agree.
 
 ## Honest limits
-- We run 10 tests at once, so a "Some evidence" result could occasionally be a false alarm.
+- We run 10 tests at once, so a “Possible trend” result could occasionally be a false alarm.
 - A trend shows *what* changed, not *why*.
 - NASA POWER describes a ~50 km area, not a single street.
 - Year-to-year climate values can run in streaks (autocorrelation), which can make trend tests look somewhat more certain than they are.
@@ -63,7 +65,7 @@ HTML, CSS, JavaScript. No backend.
 - "Statistical test methods to detect trends in time series data" (Medium) and "A Comprehensive Guide to Statistical Significance" (Statsig) (challenge resources).
 
 ## AI use
-Built by Aaryan Devaanbu, with AI assistance (Claude) for coding. Project idea, data collection, validation, and design decisions by Aaryan. All results come from the cited data.
+Built by the team "Into the Space", with AI assistance for coding. Project idea, data collection, validation, and design decisions by Into the Space.
 
 
 ## License
