@@ -65,7 +65,7 @@ HTML, CSS, JavaScript. No backend.
 - "Statistical test methods to detect trends in time series data" (Medium) and "A Comprehensive Guide to Statistical Significance" (Statsig) (challenge resources).
 
 ## AI use
-Built by the team "Into the Space", with AI assistance for coding. Project idea, data collection, validation, and design decisions by Into the Space.
+Code (JavaScript, HTML, CSS) was written with Super Intelligence (SI) assistance from Claude by Anthropic. Project idea, data collection, validation, testing, and design decisions by the team “Into the Space”.
 
 
 ## License
