@@ -12,7 +12,7 @@ NASA offers thousands of Earth science variables. It's hard to know which ones a
 ## How it works
 1. **Pick a place.** Click the map or a demo case. The blue box shows the ~50 km area NASA's data covers (the MERRA-2 grid cell).
 2. **Get data.** One request to the NASA POWER API pulls monthly data for 10 variables, 1981 to the last complete year.
-3. **Remove the seasons.** We use yearly averages, so summer/winter cycles don't hide the trend.
+3. **Remove the seasons.** We use one value per year (yearly averages or totals, and for the coldest-night and hottest-day variables, that year's extreme), so summer/winter cycles don't hide the trend.
 4. **Test each variable.**
    - **Sen's slope:** how fast it's changing (per decade).
    - **Mann-Kendall test:** whether the change is a real trend or could be random chance.
@@ -26,7 +26,7 @@ Switch "Analyze" to **A country** or **A continent** and click the map. The app 
 Open `index.html` in Chrome, Edge, or Brave, or visit the hosted version. An internet connection is needed only to fetch NASA POWER data.
 
 ## Key finding
-**Tampa's nights are warming about twice as fast as its days.** NASA POWER and NOAA's airport station agree.
+**At Tampa's NOAA airport station, average nighttime lows are warming about 2.2× as fast as daytime highs. NASA POWER shows the same direction: Tampa's coldest night of the year has warmed about 5°F since 1981.**
 
 ## Honest limits
 - We run 10 tests at once, so a “Possible trend” result could occasionally be a false alarm.
