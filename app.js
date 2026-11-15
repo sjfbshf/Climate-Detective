@@ -852,6 +852,23 @@ function openFromLink() {
   }
 }
 
+// "More results below" button: shows while there are results further down the page
+function initMoreHint() {
+  const btn = document.createElement("button");
+  btn.id = "moreHint"; btn.hidden = true; btn.textContent = "↓ More results below";
+  document.body.appendChild(btn);
+  btn.addEventListener("click", () => window.scrollBy({ top: window.innerHeight * 0.7, behavior: "smooth" }));
+  const check = () => {
+    const hasResults = document.getElementById("suspects").innerHTML.trim() !== "";
+    const left = document.documentElement.scrollHeight - (window.scrollY + window.innerHeight);
+    btn.hidden = !(hasResults && left > 200);
+  };
+  window.addEventListener("scroll", check, { passive: true });
+  window.addEventListener("resize", check);
+  new MutationObserver(() => setTimeout(check, 50)).observe(document.getElementById("right"), { childList: true, subtree: true });
+}
+
 initMap();
 initDivider();
+initMoreHint();
 map.on("load", openFromLink);
