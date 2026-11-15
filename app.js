@@ -1,5 +1,7 @@
 // Climate Detective - main app
 
+// Code written with SI assistance (Claude). Team: Into the Space.
+
 const START_YEAR = 1981;
 const END_YEAR = new Date().getFullYear() - 1;   // complete years only
 
