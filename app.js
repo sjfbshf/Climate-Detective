@@ -9,13 +9,14 @@ const END_YEAR = new Date().getFullYear() - 1;   // complete years only
 // kind "temp": show change in °F. Otherwise show change as a percent of the starting value.
 // up / down: words for the direction of change. why: why a normal person might care.
 const VARS = {
-  T2M_MIN: { name: "Nighttime low temperature", sub: "How cool it gets at night", units: "°F", kind: "temp", up: "warmer", down: "cooler",
-    def: "How cool it gets at night (the coldest point of each day), averaged over the year.",
-    why: "Warmer nights give people, animals, and plants less time to cool off after hot days, and mean air conditioners run longer.",
+    // NASA POWER's yearly value for T2M_MIN / T2M_MAX is the single most extreme reading of the year
+  T2M_MIN: { name: "Coldest night of the year", sub: "Lowest temperature each year", units: "°F", kind: "temp", up: "warmer", down: "cooler",
+    def: "The single coldest temperature of each year. In most places this happens on a winter night.",
+    why: "Milder cold snaps mean fewer frosts and freezes, which changes what plants can grow and which pests survive the winter.",
     convert: v => v * 1.8 + 32, digits: 1 },
-  T2M_MAX: { name: "Daytime high temperature", sub: "How hot it gets during the day", units: "°F", kind: "temp", up: "warmer", down: "cooler",
-    def: "How hot it gets during the day (the hottest point of each day), averaged over the year.",
-    why: "Hotter days raise the risk of heat illness, especially for people who work or play outside.",
+  T2M_MAX: { name: "Hottest day of the year", sub: "Highest temperature each year", units: "°F", kind: "temp", up: "warmer", down: "cooler",
+    def: "The single hottest temperature of each year. In most places this happens on a summer afternoon.",
+    why: "Hotter extremes raise the risk of heat illness, especially for people who work or play outside.",
     convert: v => v * 1.8 + 32, digits: 1 },
   T2M: { name: "Mean air temperature", sub: "Average temperature, day and night", units: "°F", kind: "temp", up: "warmer", down: "cooler",
     def: "The average air temperature, day and night, across the whole year.",
@@ -673,7 +674,7 @@ function openCase(i) {
       <p><b>Why it matters:</b> ${v.why}</p>
       <p><b>Definition:</b> ${v.def}</p>
     </div>
-    <p class="note" style="margin-bottom:4px">Each dot is one year's average. The red line is the long-term trend (Sen's slope).</p>
+    <p class="note" style="margin-bottom:4px">Each dot is one year. The red line is the long-term trend (Sen's slope).</p>
     <canvas id="chart" height="220" aria-label="Chart of ${v.name} by year with trend line"></canvas>
     <details class="nerd"><summary>Method details</summary>
       Trend rate: ${perDecadeText(row)} (Sen's slope). Significance: Mann-Kendall test, ${formatP(row.p)} (Z = ${row.Z.toFixed(2)}).
@@ -721,37 +722,38 @@ function renderVerified(rows) {
   const stationRainSame = analyzeSeries(noaaSame.map(r => r.year), noaaSame.map(r => r.prcp));
 
   const cell = (a, unit, d) => {
-    if (!a) return "n/a";
+    if (!a) return `<span class="note">Not in this dataset</span>`;
     const lvl = evidenceLevel(a.p);
     const plain = lvl.cls === "strong" ? "Clear trend" : lvl.cls === "some" ? "Possible trend" : "No clear trend";
     return `${a.perDecade >= 0 ? "+" : "−"}${Math.abs(a.perDecade).toFixed(d)}${unit} per decade<br><span class="badge ${lvl.cls}">${plain}</span>`;
   };
   const agree = (a, b) => {
-    if (!a || !b) return "";
+    if (!a || !b) return `<span class="note">Station only</span>`;
     const sameDir = Math.sign(a.perDecade) === Math.sign(b.perDecade);
     const bothSig = a.p < 0.05 && b.p < 0.05, bothNot = a.p >= 0.05 && b.p >= 0.05;
     if (sameDir && (bothSig || bothNot)) return `<span class="ok">✓ Agree</span>`;
     if (sameDir) return `<span class="warn">Same direction</span>`;
     return `<span class="err">Disagree</span>`;
   };
+  const nightS = noaa("tmin"), dayS = noaa("tmax");
   const lines = [
-    { label: "Nighttime low temperature", nasa: find("T2M_MIN"), station: noaa("tmin"), u: "°F", d: 1 },
-    { label: "Daytime high temperature", nasa: find("T2M_MAX"), station: noaa("tmax"), u: "°F", d: 1 },
     { label: "Mean air temperature", nasa: find("T2M"), station: noaa("tavg"), u: "°F", d: 1 },
-    { label: "Annual precipitation", nasa: find("PRECTOTCORR"), station: noaa("prcp"), u: " in", d: 1 }
+    { label: "Annual precipitation", nasa: find("PRECTOTCORR"), station: noaa("prcp"), u: " in", d: 1 },
+    { label: "Average nighttime low", nasa: null, station: nightS, u: "°F", d: 1 },
+    { label: "Average daytime high", nasa: null, station: dayS, u: "°F", d: 1 }
   ];
 
-  const nightN = find("T2M_MIN"), dayN = find("T2M_MAX"), nightS = noaa("tmin"), dayS = noaa("tmax");
-  const ratioN = nightN && dayN && dayN.perDecade ? nightN.perDecade / dayN.perDecade : null;
-  const ratioS = nightS.perDecade / dayS.perDecade;
-  const nightsFaster = ratioN && ratioN > 1 && ratioS > 1 && nightN.p < 0.05 && nightS.p < 0.05;
+  // Key finding: at the station, nights warm faster than days; NASA shows the coldest nights getting milder
+  const ratio = dayS.perDecade > 0 ? nightS.perDecade / dayS.perDecade : null;
+  const coldN = find("T2M_MIN");
+  const nightsFaster = ratio && ratio > 1.2 && nightS.p < 0.05;
   const keyFinding = nightsFaster
-    ? `<p class="verdict" style="font-size:15px"><b class="found">Key finding:</b> In Tampa, <b>nights are warming about twice as fast as days</b>, and both the NASA estimate and the NOAA station show it. The station warms somewhat faster overall, likely due to the urban heat island effect (cities retain heat), while NASA's area also includes rural land and water.</p>`
+    ? `<p class="verdict" style="font-size:15px"><b class="found">Key finding:</b> At Tampa's NOAA airport station, <b>average nighttime lows are warming about ${ratio.toFixed(1)} times as fast as daytime highs</b>.${coldN && coldN.p < 0.05 ? ` NASA's data points the same way: <b>the coldest night of the year ${changePhrase(coldN).replace(/^./, c => c.toLowerCase())}</b>.` : ""} The station warms somewhat faster overall than NASA's estimate, likely due to the urban heat island effect (cities hold heat), while NASA's area also includes rural land and water.</p>`
     : `<p class="note">NASA's area-wide estimate and a single airport thermometer measure things a bit differently, so small differences are normal.</p>`;
 
   document.getElementById("verified").innerHTML = `
     <h2>Validation against independent measurements</h2>
-    <p class="note">NASA POWER values are model estimates for an area about 30 miles across. To check them, we compared the same trends with <b>direct measurements from the NOAA weather station at Tampa International Airport</b>, and with rainfall measured from space by NASA's GPM satellite mission.</p>
+    <p class="note">NASA POWER values are model estimates for an area about 30 miles across. To check them, we compared the same trends with <b>direct measurements from the NOAA weather station at Tampa International Airport</b>, and with rainfall measured from space by NASA's GPM satellite mission. The last two rows are station-only: NASA POWER's yearly data gives the single coldest and hottest readings, not daily averages.</p>
     <table class="check">
       <tr><th>Variable</th><th>NASA POWER</th><th>NOAA station</th><th>Agreement</th></tr>
       ${lines.map(l => `<tr><td>${l.label}</td><td>${cell(l.nasa, l.u, l.d)}</td><td>${cell(l.station, l.u, l.d)}</td><td>${agree(l.nasa, l.station)}</td></tr>`).join("")}
@@ -759,7 +761,6 @@ function renderVerified(rows) {
     </table>
     ${keyFinding}`;
 }
-
 // ---------- Resize bar between map and results ----------
 function initDivider() {
   const main = document.querySelector("main"), bar = document.getElementById("divider");
